@@ -1,0 +1,204 @@
+{
+  "main": {
+    "id": "6d97bad5b9d38482",
+    "type": "split",
+    "children": [
+      {
+        "id": "9d780568e072b897",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e8345517114182ed",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "f8c35eb0b3d90e1b",
+    "type": "split",
+    "children": [
+      {
+        "id": "251902f15fcfecc3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "47e2d4e2f4504942",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "32c96e478e3b4d78",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "41db36e0daf6e847",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "right": {
+    "id": "66757b858007d47d",
+    "type": "split",
+    "children": [
+      {
+        "id": "80af4f31e9ab18e9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "553b512221c938a5",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "511ab5d74e3b3010",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "b843715bb7b33a2a",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "1f0437c544e78c08",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "ff5cf5da29de9ea2",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "e8345517114182ed",
+  "lastOpenFiles": [
+    "docs/06-PROGRESO.md.tmp.22864.d6d463b244e7",
+    "test_popup.html.tmp.22864.28d06d733222",
+    "test_popup.html.tmp.22864.c2a0c4b98173",
+    "test_popup.html.tmp.22864.35a9bcd77256",
+    "test_popup.html.tmp.22864.c87b642da14f",
+    "test_popup.html.tmp.22864.6bfdfa02458f",
+    "test_popup.html.tmp.22864.f82f513fc83b",
+    "test_popup.html.tmp.22864.cf4d84e2357f",
+    "test_popup.html.tmp.22864.4876f1cb44b5",
+    "test_popup.html.tmp.22864.7328c6fd5968",
+    "test_popup.html.tmp.22864.2972237206e1",
+    "docs/REPORTE_ESTADO.md",
+    "docs/GUIA MAESTRA.md",
+    "docs/red-neuronal/arquitectura-del-modelo.md",
+    "2026-06-10.md",
+    "docs/red-neuronal/bitacora-experimentos.md",
+    "docs/red-neuronal/flujo-de-datos.md",
+    "docs/red-neuronal/que-es-el-lstm.md",
+    "Untitled 1.canvas",
+    "Untitled.canvas",
+    "CLAUDE.md"
+  ]
+}

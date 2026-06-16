@@ -1,0 +1,54 @@
+<svg width="100%" viewBox="0 0 680 720" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+<rect width="680" height="720" fill="#0f1117"/>
+
+<text x="170" y="28" fill="#e0e0e0" font-size="14" font-weight="500" text-anchor="middle">Persona sorda (app)</text>
+<text x="510" y="28" fill="#e0e0e0" font-size="14" font-weight="500" text-anchor="middle">Oyente (web por QR)</text>
+
+<line x1="340" y1="40" x2="340" y2="700" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
+
+<rect x="50" y="48" width="240" height="44" rx="8" fill="#0C447C" stroke="#85B7EB" stroke-width="0.5"/><text x="170" y="70" fill="#B5D4F4" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Iniciar conversación</text>
+<line x1="170" y1="92" x2="170" y2="120" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="50" y="120" width="240" height="56" rx="8" fill="#0C447C" stroke="#85B7EB" stroke-width="0.5"/><text x="170" y="140" fill="#B5D4F4" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Se muestra el código QR</text><text x="170" y="160" fill="#85B7EB" font-size="12" text-anchor="middle" dominant-baseline="central">Apunta a la sesión en la nube</text>
+
+<path d="M290 148 L400 148 L400 120" stroke="#888780" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="345" y="140" fill="#B4B2A9" font-size="12" text-anchor="middle">escanea</text>
+
+<rect x="390" y="64" width="240" height="56" rx="8" fill="#633806" stroke="#EF9F27" stroke-width="0.5"/><text x="510" y="84" fill="#FAC775" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Escanea el QR</text><text x="510" y="104" fill="#EF9F27" font-size="12" text-anchor="middle" dominant-baseline="central">Se abre su página web</text>
+<line x1="510" y1="120" x2="510" y2="148" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="390" y="148" width="240" height="44" rx="8" fill="#633806" stroke="#EF9F27" stroke-width="0.5"/><text x="510" y="170" fill="#FAC775" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Unido a la sesión</text>
+
+<text x="40" y="232" fill="#e0e0e0" font-size="14" font-weight="500">Conversación en vivo</text>
+<line x1="40" y1="244" x2="640" y2="244" stroke="#B4B2A9" stroke-width="0.5"/>
+
+<rect x="50" y="262" width="240" height="56" rx="8" fill="#0C447C" stroke="#85B7EB" stroke-width="0.5"/><text x="170" y="282" fill="#B5D4F4" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Hace señas</text><text x="170" y="302" fill="#85B7EB" font-size="12" text-anchor="middle" dominant-baseline="central">Cámara + MediaPipe + LSTM</text>
+<line x1="170" y1="318" x2="170" y2="346" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="50" y="346" width="240" height="56" rx="8" fill="#0C447C" stroke="#85B7EB" stroke-width="0.5"/><text x="170" y="366" fill="#B5D4F4" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Arma la frase</text><text x="170" y="386" fill="#85B7EB" font-size="12" text-anchor="middle" dominant-baseline="central">Acumula palabras con sentido</text>
+
+<path d="M290 374 L400 374" stroke="#1D9E75" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="345" y="366" fill="#B4B2A9" font-size="12" text-anchor="middle">envía</text>
+
+<rect x="390" y="346" width="240" height="56" rx="8" fill="#633806" stroke="#EF9F27" stroke-width="0.5"/><text x="510" y="366" fill="#FAC775" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Recibe texto y voz</text><text x="510" y="386" fill="#EF9F27" font-size="12" text-anchor="middle" dominant-baseline="central">Lee y escucha (TTS)</text>
+
+<line x1="510" y1="402" x2="510" y2="448" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="390" y="448" width="240" height="56" rx="8" fill="#633806" stroke="#EF9F27" stroke-width="0.5"/><text x="510" y="468" fill="#FAC775" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Responde</text><text x="510" y="488" fill="#EF9F27" font-size="12" text-anchor="middle" dominant-baseline="central">Escribe o habla (voz a texto)</text>
+
+<path d="M390 476 L280 476" stroke="#1D9E75" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="335" y="468" fill="#B4B2A9" font-size="12" text-anchor="middle">envía</text>
+
+<rect x="50" y="448" width="240" height="56" rx="8" fill="#0C447C" stroke="#85B7EB" stroke-width="0.5"/><text x="170" y="468" fill="#B5D4F4" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Lee la respuesta</text><text x="170" y="488" fill="#85B7EB" font-size="12" text-anchor="middle" dominant-baseline="central">Texto grande en pantalla</text>
+
+<path d="M170 504 L170 540 L340 540" stroke="#888780" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M510 504 L510 540 L340 540" stroke="#888780" stroke-width="0.5" fill="none"/>
+<text x="340" y="566" fill="#B4B2A9" font-size="12" text-anchor="middle">↻ la conversación continúa de ida y vuelta</text>
+
+<rect x="160" y="600" width="360" height="56" rx="12" fill="#085041" stroke="#5DCAA5" stroke-width="0.5"/><text x="340" y="620" fill="#9FE1CB" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Supabase Realtime</text><text x="340" y="640" fill="#5DCAA5" font-size="12" text-anchor="middle" dominant-baseline="central">Pasa los mensajes; no guarda la conversación</text>
+<path d="M170 656 L170 678 L340 678" stroke="#1D9E75" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M510 656 L510 678 L340 678" stroke="#1D9E75" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+</svg>

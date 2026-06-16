@@ -1,0 +1,48 @@
+<svg width="100%" viewBox="0 0 680 760" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+</defs>
+<rect width="680" height="760" fill="#0f1117"/>
+
+<text x="40" y="28" fill="#e0e0e0" font-size="14" font-weight="500">Apertura y primer uso</text>
+
+<rect x="270" y="44" width="140" height="44" rx="8" fill="#2c2c2a" stroke="#5f5e5a" stroke-width="0.5"/><text x="340" y="66" fill="#e0e0e0" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Abrir la app</text>
+<line x1="340" y1="88" x2="340" y2="118" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="250" y="118" width="180" height="56" rx="8" fill="#085041" stroke="#5DCAA5" stroke-width="0.5"/><text x="340" y="138" fill="#9FE1CB" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Bienvenida</text><text x="340" y="158" fill="#5DCAA5" font-size="12" text-anchor="middle" dominant-baseline="central">Solo la primera vez</text>
+<line x1="340" y1="174" x2="340" y2="204" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="250" y="204" width="180" height="56" rx="8" fill="#085041" stroke="#5DCAA5" stroke-width="0.5"/><text x="340" y="224" fill="#9FE1CB" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Cuenta (opcional)</text><text x="340" y="244" fill="#5DCAA5" font-size="12" text-anchor="middle" dominant-baseline="central">Crear, entrar o saltar</text>
+<line x1="340" y1="260" x2="340" y2="290" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<text x="40" y="284" fill="#e0e0e0" font-size="14" font-weight="500">Pantallas principales</text>
+
+<rect x="240" y="298" width="200" height="56" rx="8" fill="#3C3489" stroke="#AFA9EC" stroke-width="1"/><text x="340" y="318" fill="#CECBF6" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Conversar</text><text x="340" y="338" fill="#AFA9EC" font-size="12" text-anchor="middle" dominant-baseline="central">Pantalla principal</text>
+
+<rect x="40" y="410" width="140" height="56" rx="8" fill="#2c2c2a" stroke="#5f5e5a" stroke-width="0.5"/><text x="110" y="430" fill="#e0e0e0" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Aprender</text><text x="110" y="450" fill="#B4B2A9" font-size="12" text-anchor="middle" dominant-baseline="central">Enseñar señas</text>
+<rect x="200" y="410" width="140" height="56" rx="8" fill="#2c2c2a" stroke="#5f5e5a" stroke-width="0.5"/><text x="270" y="430" fill="#e0e0e0" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Biblioteca</text><text x="270" y="450" fill="#B4B2A9" font-size="12" text-anchor="middle" dominant-baseline="central">Señas conocidas</text>
+<rect x="360" y="410" width="140" height="56" rx="8" fill="#2c2c2a" stroke="#5f5e5a" stroke-width="0.5"/><text x="430" y="430" fill="#e0e0e0" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Ajustes</text><text x="430" y="450" fill="#B4B2A9" font-size="12" text-anchor="middle" dominant-baseline="central">Cámara, voz, cuenta</text>
+<rect x="520" y="410" width="120" height="56" rx="8" fill="#3C3489" stroke="#AFA9EC" stroke-width="0.5"/><text x="580" y="430" fill="#CECBF6" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Conversar</text><text x="580" y="450" fill="#AFA9EC" font-size="12" text-anchor="middle" dominant-baseline="central">Volver</text>
+
+<path d="M340 354 L340 382 L110 382 L110 410" stroke="#888780" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M340 354 L340 382 L270 382 L270 410" stroke="#888780" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M340 354 L340 382 L430 382 L430 410" stroke="#888780" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M340 354 L340 382 L580 382 L580 410" stroke="#888780" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+
+<text x="340" y="498" fill="#B4B2A9" font-size="12" text-anchor="middle">Barra de navegación (pestañas en móvil, lateral en escritorio)</text>
+
+<text x="40" y="544" fill="#e0e0e0" font-size="14" font-weight="500">Las tres superficies del sistema</text>
+
+<rect x="40" y="560" width="190" height="80" rx="12" fill="#0C447C" stroke="#85B7EB" stroke-width="0.5"/><text x="135" y="584" fill="#B5D4F4" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">App persona sorda</text><text x="135" y="606" fill="#85B7EB" font-size="12" text-anchor="middle" dominant-baseline="central">Móvil y escritorio</text><text x="135" y="624" fill="#85B7EB" font-size="12" text-anchor="middle" dominant-baseline="central">Todas las funciones</text>
+
+<rect x="250" y="560" width="190" height="80" rx="12" fill="#712B13" stroke="#F0997B" stroke-width="0.5"/><text x="345" y="584" fill="#F5C4B3" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Backend local</text><text x="345" y="606" fill="#F0997B" font-size="12" text-anchor="middle" dominant-baseline="central">Python en el equipo</text><text x="345" y="624" fill="#F0997B" font-size="12" text-anchor="middle" dominant-baseline="central">MediaPipe + LSTM</text>
+
+<rect x="460" y="560" width="180" height="80" rx="12" fill="#633806" stroke="#EF9F27" stroke-width="0.5"/><text x="550" y="584" fill="#FAC775" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Página oyente</text><text x="550" y="606" fill="#EF9F27" font-size="12" text-anchor="middle" dominant-baseline="central">Web por QR</text><text x="550" y="624" fill="#EF9F27" font-size="12" text-anchor="middle" dominant-baseline="central">Sin instalar nada</text>
+
+<line x1="230" y1="600" x2="248" y2="600" stroke="#888780" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+<rect x="180" y="676" width="320" height="56" rx="12" fill="#085041" stroke="#5DCAA5" stroke-width="0.5"/><text x="340" y="696" fill="#9FE1CB" font-size="14" font-weight="500" text-anchor="middle" dominant-baseline="central">Supabase (nube)</text><text x="340" y="716" fill="#5DCAA5" font-size="12" text-anchor="middle" dominant-baseline="central">Cuentas · estadísticas · sesión en vivo por QR</text>
+
+<path d="M135 640 L135 704 L180 704" stroke="#1D9E75" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M550 640 L550 704 L500 704" stroke="#1D9E75" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+</svg>
