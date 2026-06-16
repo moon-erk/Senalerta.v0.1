@@ -1,0 +1,1733 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>SeñAlerta</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        oklch(0.16 0.015 260);
+  --card:      oklch(0.20 0.018 260);
+  --border:    oklch(0.30 0.02  260);
+  --text:      oklch(0.96 0.005 250);
+  --muted:     oklch(0.68 0.02  260);
+  --primary:   oklch(0.78 0.22  340);
+  --accent:    oklch(0.82 0.20  145);
+  --danger:    oklch(0.65 0.22   25);
+  --radius:    10px;
+
+  /* Escala tipográfica responsiva */
+  --f-xs: clamp(0.60rem, 0.80vw, 0.70rem);
+  --f-sm: clamp(0.68rem, 0.90vw, 0.78rem);
+  --f-md: clamp(0.75rem, 1.00vw, 0.88rem);
+  --f-lg: clamp(0.80rem, 1.20vw, 0.95rem);
+
+  /* Espaciado responsivo */
+  --gap-sm: clamp(4px,  0.6vw,  6px);
+  --gap-md: clamp(6px,  0.9vw, 10px);
+  --pad-sm: clamp(4px,  0.6vw,  8px);
+  --pad-md: clamp(6px,  1.0vw, 12px);
+  --pad-lg: clamp(8px,  1.5vw, 18px);
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: monospace;
+  font-size: var(--f-md);
+  overflow: hidden;
+}
+
+/* ── LAYOUT ── */
+#shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ── HEADER ── */
+#hdr {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--pad-lg);
+  height: clamp(38px, 5vh, 48px);
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+
+#hdr-left { display: flex; align-items: center; gap: var(--gap-md); }
+
+.dot-pulse {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.85); }
+}
+
+#brand     { font-size: var(--f-lg); font-weight: 600; color: var(--text); }
+#brand-sub { color: var(--muted); font-size: var(--f-sm); }
+
+#hdr-right { display: flex; align-items: center; gap: var(--pad-md); }
+#clock     { font-size: var(--f-md); color: var(--muted); }
+#live-badge {
+  font-size: var(--f-xs); font-weight: 700; color: #fff;
+  background: var(--danger);
+  padding: 2px 7px; border-radius: 4px;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+/* ── MAIN ── */
+#main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: var(--gap-md);
+  padding: var(--gap-md);
+  overflow: hidden;
+}
+
+/* ── LEFT COLUMN ── */
+#col-left {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+
+/* history panel */
+#history-panel {
+  flex-shrink: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--pad-sm) var(--pad-md);
+  min-height: clamp(44px, 6vh, 58px);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+#history-label {
+  color: var(--muted);
+  font-size: var(--f-sm);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dot-green { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+#history-words {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  min-height: 22px;
+}
+#words-prefix { color: var(--muted); font-size: var(--f-sm); flex-shrink: 0; }
+.word-badge {
+  font-size: var(--f-sm);
+  color: var(--primary);
+  background: oklch(0.78 0.22 340 / 0.10);
+  border: 1px solid oklch(0.78 0.22 340 / 0.40);
+  border-radius: 4px;
+  padding: 1px 7px;
+}
+#words-empty { color: var(--muted); font-style: italic; font-size: var(--f-sm); }
+#cursor {
+  display: inline-block;
+  width: 6px; height: 12px;
+  background: var(--accent);
+  vertical-align: middle;
+  animation: blink 1s step-start infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* clear button in history */
+#btn-clear {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: monospace;
+  font-size: var(--f-sm);
+  padding: 2px 8px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+#btn-clear:hover { border-color: var(--primary); color: var(--primary); }
+
+/* camera viewport */
+#cam-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: oklch(0.10 0.01 260);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* scanlines */
+#cam-wrap::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px, transparent 31px,
+    rgba(255,255,255,0.07) 31px, rgba(255,255,255,0.07) 32px
+  );
+}
+
+#cam-stream {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0.85;
+  z-index: 2;
+  display: none;
+}
+#cam-stream.on { display: block; }
+
+/* HUD */
+.cam-hud {
+  position: absolute;
+  z-index: 3;
+  font-size: var(--f-xs);
+  font-family: monospace;
+  background: rgba(0,0,0,0.50);
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+#hud-tl { top: 8px; left: 8px; color: rgba(255,255,255,0.80); }
+#hud-tr { top: 8px; right: 8px; }
+#hud-tr.ok  { color: var(--accent); }
+#hud-tr.err { color: var(--danger); }
+
+/* emotion label */
+#emotion-hud {
+  position: absolute;
+  z-index: 3;
+  top: 8px; left: 50%; transform: translateX(-50%);
+  background: rgba(255,255,255,0.90);
+  color: #111;
+  font-size: var(--f-sm);
+  font-weight: 700;
+  padding: 2px 12px;
+  border-radius: 20px;
+  display: none;
+  white-space: nowrap;
+}
+#emotion-hud.on { display: block; }
+
+/* prediction widget */
+#pred-widget {
+  position: absolute;
+  z-index: 3;
+  bottom: 14px;
+  left: 50%; transform: translateX(-50%);
+  width: 78%;
+  background: rgba(0,0,0,0.70);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  padding: 10px 16px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+}
+#pred-widget.on { display: flex; }
+
+#pred-word {
+  font-size: clamp(1.2rem, 3.5vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+}
+#pred-track {
+  height: 4px;
+  background: rgba(255,255,255,0.10);
+  border-radius: 2px;
+  overflow: hidden;
+}
+#pred-fill {
+  height: 100%;
+  background: var(--accent);
+  box-shadow: 0 0 12px oklch(0.82 0.20 145);
+  width: 0%;
+  transition: width 0.15s ease;
+  border-radius: 2px;
+}
+#pred-pct {
+  font-size: var(--f-xs);
+  color: rgba(255,255,255,0.70);
+  text-align: center;
+}
+
+/* ── RIGHT COLUMN ── */
+#col-right {
+  flex: 0 0 clamp(240px, 25%, 340px);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  overflow: hidden; /* sin scroll — todo entra o se comprime */
+}
+
+/* Los paneles se distribuyen el espacio disponible entre ellos */
+.panel {
+  flex: 1 1 0;         /* crecen y encogen por igual */
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+/* El header de cada panel nunca encoge */
+.panel-hdr {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--pad-sm) var(--pad-md);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--f-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.panel-hdr .live-tag { color: var(--accent); font-size: var(--f-xs); }
+
+/* emotions */
+#emotions-list {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly; /* filas se distribuyen el espacio */
+  overflow: hidden;
+}
+.emotion-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--pad-md);
+  flex: 1;             /* cada fila toma su parte proporcional */
+  min-height: 0;
+  border-radius: 6px;
+  margin: 1px 4px;
+  transition: background 0.2s;
+}
+.emotion-row.active { background: rgba(255,255,255,0.05); }
+.emotion-name { font-size: var(--f-sm); color: var(--text); }
+
+.emotion-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.emotion-dot.happy   { background: var(--accent); }
+.emotion-dot.sad     { background: oklch(0.65 0.18 240); }
+.emotion-dot.neutral { background: var(--muted); }
+.emotion-dot.angry   { background: var(--danger); }
+.emotion-dot.surprised { background: oklch(0.85 0.19 75); }
+.emotion-row.active .emotion-dot { animation: ping 1s ease-in-out infinite; }
+@keyframes ping {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.5); opacity: 0.6; }
+}
+
+/* session */
+#session-list {
+  flex: 1 1 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  overflow: hidden;
+}
+.session-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--pad-md);
+  flex: 1;
+  min-height: 0;
+  border-bottom: 1px solid oklch(0.25 0.018 260);
+}
+.session-row:last-child { border-bottom: none; }
+.session-key { color: var(--muted); font-size: var(--f-xs); }
+.session-val { color: var(--text);  font-size: var(--f-sm); font-weight: 600; }
+.session-val.accent { color: var(--accent); }
+
+/* controls / pipeline bodies */
+.ctrl-body {
+  flex: 1 1 0;
+  min-height: 0;
+  padding: var(--pad-sm) var(--pad-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  justify-content: space-evenly; /* botones se distribuyen verticalmente */
+  overflow: hidden;
+}
+
+.btn {
+  flex: 1;             /* ocupa su parte proporcional del cuerpo */
+  min-height: 0;
+  font-family: monospace;
+  font-size: var(--f-sm);
+  font-weight: 600;
+  border: none;
+  border-radius: 7px;
+  padding: 0 var(--pad-md); /* solo padding horizontal; alto lo da flex */
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: filter 0.15s;
+}
+.btn:hover  { filter: brightness(1.12); }
+.btn:active { filter: brightness(0.90); }
+
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-danger  { background: var(--danger);  color: #fff; }
+.btn-toggle  { background: var(--card); border: 1px solid var(--border); color: var(--text); }
+.btn-toggle.on { background: var(--accent); color: oklch(0.12 0.01 145); border-color: var(--accent); }
+.btn-ghost   { background: var(--card); border: 1px solid var(--border); color: var(--text); }
+
+/* ── SEÑAS PANEL ── */
+#signs-panel { flex: 2 1 0; }
+
+#signs-list {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  padding: var(--pad-sm) 0;
+}
+#signs-list::-webkit-scrollbar { width: 3px; }
+#signs-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.sign-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--pad-sm) var(--pad-md);
+  border-radius: 4px;
+  margin: 1px var(--pad-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sign-row:hover { background: rgba(255,255,255,0.05); }
+.sign-row.capturing { background: oklch(0.78 0.22 340 / 0.10); }
+.sign-name { font-size: var(--f-sm); color: var(--text); }
+.sign-row.trained .sign-name { color: var(--accent); }
+.sign-meta { display: flex; align-items: center; gap: var(--gap-sm); }
+.sign-count { font-size: var(--f-xs); color: var(--muted); }
+.sign-check { font-size: var(--f-xs); color: var(--accent); }
+#signs-empty { font-size: var(--f-xs); color: var(--muted); font-style: italic; padding: var(--pad-sm) var(--pad-md); }
+
+#new-sign-form {
+  flex-shrink: 0;
+  padding: var(--pad-sm) var(--pad-md);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+#word-input {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: monospace;
+  font-size: var(--f-sm);
+  padding: var(--pad-sm) var(--pad-md);
+  border-radius: 6px;
+  outline: none;
+  width: 100%;
+}
+#word-input:focus { border-color: var(--primary); }
+.capture-btns { display: flex; gap: var(--gap-sm); }
+.capture-btns .btn { flex: 1; }
+#sample-count { font-size: var(--f-xs); color: var(--accent); text-align: center; min-height: 14px; }
+
+/* pipeline */
+.pipe-body {
+  flex: 1 1 0;
+  min-height: 0;
+  padding: var(--pad-sm) var(--pad-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  justify-content: space-evenly;
+  overflow: hidden;
+}
+#train-progress-wrap { display: none; flex-direction: column; gap: 4px; }
+#train-progress-wrap.on { display: flex; }
+#train-track {
+  height: 3px;
+  background: oklch(0.25 0.018 260);
+  border-radius: 2px;
+  overflow: hidden;
+}
+#train-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.3s;
+  border-radius: 2px;
+}
+#train-label { font-size: var(--f-xs); color: var(--muted); text-align: center; }
+
+/* ── STATUS BAR ── */
+#status-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: clamp(20px, 3vh, 26px);
+  padding: 0 var(--pad-md);
+  background: oklch(0.13 0.012 260);
+  border-top: 1px solid var(--border);
+  font-size: var(--f-xs);
+  color: var(--muted);
+}
+#status-left { display: flex; align-items: center; gap: var(--gap-md); }
+#status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--danger);
+  flex-shrink: 0;
+}
+#status-dot.ok { background: var(--accent); }
+#status-right { color: var(--muted); }
+
+/* ── FOOTER ── */
+#footer {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--gap-sm);
+  padding: var(--pad-sm) var(--pad-md);
+  background: var(--card);
+  border-top: 1px solid var(--border);
+}
+.footer-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: var(--pad-sm) var(--pad-md);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.footer-icon { font-size: var(--f-md); }
+.footer-title { font-size: var(--f-xs); font-weight: 600; color: var(--text); }
+.footer-desc  { font-size: var(--f-xs); color: var(--muted); line-height: 1.4; }
+
+/* ── EMOTION PIPELINE (inline → CSS) ── */
+#emotion-select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: monospace;
+  font-size: var(--f-sm);
+  padding: var(--pad-sm) var(--pad-md);
+  border-radius: 6px;
+  outline: none;
+  width: 100%;
+  cursor: pointer;
+}
+#emotion-sample-count { font-size: var(--f-xs); color: var(--accent); text-align: center; min-height: 16px; }
+#emotion-train-wrap { display: none; flex-direction: column; gap: 4px; }
+#emotion-train-wrap.on { display: flex; }
+#emotion-train-track {
+  height: 3px;
+  background: oklch(0.25 0.018 260);
+  border-radius: 2px;
+  overflow: hidden;
+}
+#emotion-train-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.3s;
+  border-radius: 2px;
+}
+#emotion-train-label { font-size: var(--f-xs); color: var(--muted); text-align: center; }
+
+/* ── MEDIA QUERIES — ANCHO ── */
+@media (max-width: 900px) {
+  #col-right { flex: 0 0 clamp(200px, 30%, 280px); }
+  #footer { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  #main { flex-direction: column; overflow-y: auto; }
+  #col-left { flex: none; min-height: 60dvh; }
+  #col-right { flex: none; width: 100%; }
+  #footer { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 400px) {
+  #footer { grid-template-columns: 1fr; }
+  .footer-desc { display: none; }
+}
+
+/* ── MEDIA QUERIES — ALTURA ── */
+
+/* Ventana mediana: comprime espaciado */
+@media (max-height: 780px) {
+  :root {
+    --pad-sm: clamp(2px, 0.35vw, 4px);
+    --pad-md: clamp(4px, 0.70vw, 8px);
+    --pad-lg: clamp(6px, 0.90vw, 11px);
+    --gap-sm: clamp(2px, 0.35vw, 4px);
+    --gap-md: clamp(4px, 0.60vw, 6px);
+  }
+  #hdr { height: clamp(34px, 4.5vh, 42px); }
+}
+
+/* Ventana pequeña: oculta footer (es solo decorativo) */
+@media (max-height: 660px) {
+  :root {
+    --pad-sm: 2px;
+    --pad-md: 4px;
+    --pad-lg: 7px;
+    --gap-sm: 2px;
+    --gap-md: 3px;
+  }
+  #hdr { height: 32px; }
+  #footer { display: none; }
+}
+
+/* Ventana muy pequeña: oculta status bar también */
+@media (max-height: 520px) {
+  #status-bar { display: none; }
+  .emotion-dot { display: none; }
+}
+/* ── tipo de seña (letra/palabra) ── */
+#type-selector { display: flex; gap: var(--gap-sm); }
+#type-selector label {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 6px; border: 1px solid var(--border); border-radius: 6px;
+  font-size: var(--f-xs); color: var(--text); cursor: pointer;
+  background: var(--card);
+}
+#type-selector label:has(input:checked) {
+  border-color: var(--primary); color: var(--primary);
+  background: rgba(255,255,255,0.04);
+}
+#type-selector input { accent-color: var(--primary); }
+#type-hint { font-size: var(--f-xs); color: var(--muted); line-height: 1.4; }
+
+/* ── modo grabación en serie ── */
+#serie-overlay {
+  display: none; position: fixed; inset: 0; z-index: 50;
+  background: rgba(0,0,0,0.82); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 4vmin;
+}
+#serie-overlay.on { display: flex; }
+#serie-panel {
+  background: var(--bg, #111); border: 1px solid var(--border); border-radius: 12px;
+  width: min(860px, 100%); max-height: 92vh; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 14px; padding: clamp(12px, 3vmin, 24px);
+}
+#serie-hdr { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+#serie-hdr h2 { margin: 0; font-size: var(--f-md, 16px); color: var(--text); }
+#serie-global-track {
+  height: 10px; background: var(--card); border: 1px solid var(--border);
+  border-radius: 5px; overflow: hidden;
+}
+#serie-global-fill {
+  height: 100%; width: 0%; background: var(--accent); transition: width .4s ease;
+}
+#serie-global-label { font-size: var(--f-xs); color: var(--muted); text-align: center; }
+#serie-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(74px, 1fr)); gap: 8px;
+}
+.serie-letter {
+  border: 1px solid var(--border); border-radius: 8px; padding: 8px 4px;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  cursor: pointer; background: var(--card); user-select: none;
+}
+.serie-letter:hover { border-color: var(--primary); }
+.serie-letter .sl-char { font-size: 22px; font-weight: 700; color: var(--text); text-transform: uppercase; }
+.serie-letter .sl-count { font-size: var(--f-xs); color: var(--muted); }
+.serie-letter.done { border-color: var(--accent); background: rgba(0,255,170,0.06); }
+.serie-letter.done .sl-char { color: var(--accent); }
+.serie-letter.done .sl-count { color: var(--accent); }
+.serie-letter.current { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary); }
+#serie-live {
+  display: none; flex-direction: column; align-items: center; gap: 6px;
+  border: 1px solid var(--border); border-radius: 10px; padding: 14px;
+  background: var(--card);
+}
+#serie-live.on { display: flex; }
+#serie-live-char { font-size: clamp(48px, 12vmin, 96px); font-weight: 800; color: var(--primary); line-height: 1; text-transform: uppercase; }
+#serie-live-type {
+  font-size: var(--f-xs); letter-spacing: 1px; color: var(--accent);
+  border: 1px solid var(--accent); border-radius: 999px; padding: 2px 12px;
+}
+#serie-live-count { font-size: clamp(20px, 5vmin, 32px); font-weight: 700; color: var(--text); }
+#serie-live.celebrate { border-color: var(--accent); animation: serie-pop .5s ease 3; }
+@keyframes serie-pop {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.04); background: rgba(0,255,170,0.12); }
+}
+#serie-celebr { display: none; font-size: clamp(18px, 4vmin, 26px); color: var(--accent); font-weight: 700; }
+#serie-celebr.on { display: block; }
+#serie-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+#serie-train-wrap { display: none; flex-direction: column; gap: 4px; }
+#serie-train-wrap.on { display: flex; }
+#serie-train-track { height: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+#serie-train-fill { height: 100%; width: 0%; background: var(--primary); transition: width .4s ease; }
+#serie-train-label { font-size: var(--f-xs); color: var(--muted); text-align: center; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; filter: none !important; }
+
+/* ── estado del modelo ── */
+#model-status-body { display: flex; flex-direction: column; gap: 4px; font-size: var(--f-xs); }
+.ms-row { display: flex; justify-content: space-between; gap: 8px; }
+.ms-row .ms-k { color: var(--muted); }
+.ms-row .ms-v { color: var(--text); font-weight: 600; text-align: right; }
+
+/* ── tabla de calidad ── */
+#quality-panel { display: none; }
+#quality-panel.on { display: block; }
+#quality-table { width: 100%; border-collapse: collapse; font-size: var(--f-xs); }
+#quality-table th, #quality-table td {
+  text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--border);
+}
+#quality-table th { color: var(--muted); font-weight: 600; }
+#quality-table tr.bad td { color: var(--danger); }
+#quality-table .q-type {
+  font-size: 9px; border: 1px solid var(--border); border-radius: 3px; padding: 0 3px; color: var(--muted);
+}
+
+/* ── visor de matriz de confusión ── */
+#matrix-overlay {
+  display: none; position: fixed; inset: 0; z-index: 60;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 4vmin;
+}
+#matrix-overlay.on { display: flex; }
+#matrix-box {
+  background: var(--bg, #111); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  max-width: 92vw; max-height: 92vh;
+}
+#matrix-box h2 { margin: 0; font-size: var(--f-md, 16px); color: var(--text); }
+#matrix-img { max-width: 100%; max-height: 78vh; object-fit: contain; background: #fff; border-radius: 8px; }
+#matrix-msg { color: var(--muted); font-size: var(--f-sm); }
+
+/* ── refuerzo de señas confundidas (modo serie) ── */
+#serie-reforzar { display: none; flex-direction: column; gap: 6px;
+  border: 1px solid var(--danger); border-radius: 10px; padding: 10px; }
+#serie-reforzar.on { display: flex; }
+#serie-reforzar h3 { margin: 0; font-size: var(--f-sm); color: var(--danger); }
+.reforzar-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px;
+}
+.reforzar-row .rf-info { font-size: var(--f-xs); color: var(--text); }
+.reforzar-row .rf-info small { color: var(--muted); }
+
+/* ── toggle 'tiene movimiento' en cada letra ── */
+.serie-letter .sl-move {
+  font-size: 8px; color: var(--muted); display: flex; align-items: center; gap: 3px;
+  margin-top: 2px; cursor: pointer; user-select: none;
+}
+.serie-letter .sl-move.active { color: var(--accent); }
+.serie-letter .sl-move input { width: 10px; height: 10px; accent-color: var(--accent); margin: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="shell">
+
+  <!-- HEADER -->
+  <header id="hdr">
+    <div id="hdr-left">
+      <div class="dot-pulse"></div>
+      <span id="brand">SeñAlerta</span>
+      <span id="brand-sub">// sign-to-voice runtime</span>
+    </div>
+    <div id="hdr-right">
+      <span id="clock">00:00</span>
+      <span id="live-badge">● LIVE</span>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- LEFT COLUMN -->
+    <div id="col-left">
+
+      <!-- History panel -->
+      <div id="history-panel">
+        <div id="history-label">
+          <span class="dot-green"></span>
+          <span style="color:var(--muted)">~/señalerta/stream.log</span>
+          <button id="btn-clear" onclick="clearSentence()">limpiar</button>
+        </div>
+        <div id="history-words">
+          <span id="words-prefix" style="display:none">Waves:</span>
+          <span id="words-empty">esperando señas...</span>
+          <span id="cursor"></span>
+        </div>
+      </div>
+
+      <!-- Camera viewport -->
+      <div id="cam-wrap">
+        <div class="cam-hud" id="hud-tl">CAM_01 · 640×480 · 30FPS</div>
+        <div class="cam-hud err" id="hud-tr">MEDIAPIPE · OFFLINE</div>
+        <div id="emotion-hud"></div>
+        <img id="cam-stream" src="" alt="">
+        <!-- Prediction widget -->
+        <div id="pred-widget">
+          <div id="pred-word"></div>
+          <div id="pred-track"><div id="pred-fill"></div></div>
+          <div id="pred-pct">0% — holding...</div>
+        </div>
+      </div>
+
+    </div><!-- /col-left -->
+
+    <!-- RIGHT COLUMN -->
+    <div id="col-right">
+
+      <!-- Emotions panel -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>&#128512; EMOTIONS</span>
+          <span class="live-tag">live</span>
+        </div>
+        <div id="emotions-list">
+          <div class="emotion-row" id="emo-feliz">
+            <span class="emotion-name">Feliz</span>
+            <span class="emotion-dot happy"></span>
+          </div>
+          <div class="emotion-row" id="emo-triste">
+            <span class="emotion-name">Triste</span>
+            <span class="emotion-dot sad"></span>
+          </div>
+          <div class="emotion-row" id="emo-neutral">
+            <span class="emotion-name">Neutral</span>
+            <span class="emotion-dot neutral"></span>
+          </div>
+          <div class="emotion-row" id="emo-enojado">
+            <span class="emotion-name">Enojado</span>
+            <span class="emotion-dot angry"></span>
+          </div>
+          <div class="emotion-row" id="emo-sorprendido">
+            <span class="emotion-name">Sorprendido</span>
+            <span class="emotion-dot surprised"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session panel -->
+      <div class="panel">
+        <div class="panel-hdr"><span>SESSION</span></div>
+        <div id="session-list">
+          <div class="session-row">
+            <span class="session-key">tokens</span>
+            <span class="session-val accent" id="sess-tokens">0</span>
+          </div>
+          <div class="session-row">
+            <span class="session-key">phase</span>
+            <span class="session-val" id="sess-phase">idle</span>
+          </div>
+          <div class="session-row">
+            <span class="session-key">model</span>
+            <span class="session-val" id="sess-model">BiLSTM v2</span>
+          </div>
+          <div class="session-row">
+            <span class="session-key">latency</span>
+            <span class="session-val" id="sess-latency">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Signs panel -->
+      <div class="panel" id="signs-panel">
+        <div class="panel-hdr">
+          <span>SEÑAS</span>
+          <span id="signs-count" class="live-tag">0 señas</span>
+        </div>
+        <div id="signs-list">
+          <span id="signs-empty">sin señas capturadas</span>
+        </div>
+        <div id="new-sign-form">
+          <input id="word-input" type="text" placeholder="nueva seña..."
+                 onkeydown="if(event.key==='Enter') startCapture()">
+          <div id="type-selector">
+            <label><input type="radio" name="sign-type" value="word" checked> PALABRA</label>
+            <label><input type="radio" name="sign-type" value="letter"> LETRA</label>
+          </div>
+          <div id="type-hint">Letra = postura mantenida, captura rápida automática. Palabra = movimiento completo, termina al bajar las manos.</div>
+          <div class="capture-btns">
+            <button class="btn btn-ghost" onclick="startCapture()">Iniciar</button>
+            <button class="btn btn-ghost" onclick="stopCapture()">Detener</button>
+          </div>
+          <div id="sample-count"></div>
+          <button class="btn btn-primary" onclick="openSerie()">Grabación en serie</button>
+        </div>
+      </div>
+
+      <!-- Controls panel -->
+      <div class="panel">
+        <div class="panel-hdr"><span>CONTROL</span></div>
+        <div class="ctrl-body">
+          <button class="btn btn-primary" onclick="startCamera()">Encender cámara</button>
+          <button class="btn btn-danger"  onclick="stopCamera()">Apagar cámara</button>
+        </div>
+      </div>
+
+      <!-- Estado del modelo -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <span>ESTADO DEL MODELO</span>
+          <button class="btn btn-ghost" style="padding:2px 8px;font-size:var(--f-xs)" onclick="loadModelStatus()">↻</button>
+        </div>
+        <div id="model-status-body">
+          <div class="ms-row"><span class="ms-k">cargando...</span></div>
+        </div>
+      </div>
+
+      <!-- Pipeline panel -->
+      <div class="panel">
+        <div class="panel-hdr"><span>PIPELINE</span></div>
+        <div class="pipe-body">
+          <button class="btn btn-ghost" onclick="createKeypoints()">Crear keypoints</button>
+          <button class="btn btn-ghost" onclick="startTraining()">Entrenar modelo</button>
+          <div id="train-progress-wrap">
+            <div id="train-track"><div id="train-fill"></div></div>
+            <div id="train-label">0%</div>
+          </div>
+          <button class="btn btn-ghost" onclick="showConfusionMatrix()">Ver matriz de confusión</button>
+        </div>
+      </div>
+
+      <!-- Calidad del modelo -->
+      <div class="panel" id="quality-panel">
+        <div class="panel-hdr">
+          <span>CALIDAD POR SEÑA</span>
+          <button class="btn btn-ghost" style="padding:2px 8px;font-size:var(--f-xs)" onclick="loadQuality()">↻</button>
+        </div>
+        <div id="quality-body"></div>
+      </div>
+
+      <!-- Emotion pipeline panel -->
+      <div class="panel">
+        <div class="panel-hdr"><span>EMOTION PIPELINE</span></div>
+        <div class="pipe-body">
+          <select id="emotion-select">
+            <option value="">-- emocion --</option>
+            <option value="feliz">Feliz</option>
+            <option value="triste">Triste</option>
+            <option value="neutral">Neutral</option>
+            <option value="enojado">Enojado</option>
+            <option value="sorprendido">Sorprendido</option>
+          </select>
+          <div class="capture-btns">
+            <button class="btn btn-ghost" onclick="startEmotionCapture()">Capturar</button>
+            <button class="btn btn-ghost" onclick="stopEmotionCapture()">Detener</button>
+          </div>
+          <div id="emotion-sample-count"></div>
+          <button class="btn btn-ghost" onclick="trainEmotionModel()">Entrenar emocion</button>
+          <div id="emotion-train-wrap">
+            <div id="emotion-train-track">
+              <div id="emotion-train-fill"></div>
+            </div>
+            <div id="emotion-train-label">0%</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /col-right -->
+
+  </div><!-- /main -->
+
+  <!-- VISOR DE MATRIZ DE CONFUSIÓN -->
+  <div id="matrix-overlay">
+    <div id="matrix-box">
+      <h2>Matriz de confusión</h2>
+      <div id="matrix-msg">Cargando...</div>
+      <img id="matrix-img" alt="matriz de confusión" style="display:none">
+      <button class="btn btn-ghost" onclick="hideMatrix()">Cerrar ✕</button>
+    </div>
+  </div>
+
+  <!-- MODO GRABACIÓN EN SERIE -->
+  <div id="serie-overlay">
+    <div id="serie-panel">
+      <div id="serie-hdr">
+        <h2>Grabación en serie — Modelo base (abecedario)</h2>
+        <button class="btn btn-ghost" onclick="closeSerie()">Cerrar ✕</button>
+      </div>
+
+      <div id="serie-global-track"><div id="serie-global-fill"></div></div>
+      <div id="serie-global-label">0 de 27 letras completas</div>
+
+      <div id="serie-live">
+        <div id="serie-live-char">a</div>
+        <div id="serie-live-type">LETRA — POSTURA ESTÁTICA</div>
+        <div id="serie-live-count">0/20</div>
+        <div id="serie-celebr">✓ ¡Letra completa!</div>
+      </div>
+
+      <div id="serie-actions">
+        <button class="btn btn-primary" id="serie-next-btn" onclick="serieNext()">Siguiente pendiente</button>
+        <button class="btn btn-danger" id="serie-pause-btn" onclick="seriePause()">Pausar</button>
+        <button class="btn btn-ghost" id="serie-train-btn" onclick="trainBaseModel()" disabled>Entrenar modelo base</button>
+      </div>
+      <div id="serie-train-wrap">
+        <div id="serie-train-track"><div id="serie-train-fill"></div></div>
+        <div id="serie-train-label"></div>
+      </div>
+
+      <div id="serie-reforzar">
+        <h3>⚠ Reforzar señas confundidas</h3>
+        <div id="serie-reforzar-list"></div>
+        <button class="btn btn-primary" id="serie-reforzar-train" onclick="trainBaseModel()">Reentrenar tras reforzar</button>
+      </div>
+
+      <div id="serie-grid"></div>
+    </div>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div id="status-bar">
+    <div id="status-left">
+      <div id="status-dot"></div>
+      <span>main</span>
+      <span style="color:var(--border)">|</span>
+      <span>Python 3.10.11</span>
+      <span id="status-msg">Sin conexión</span>
+    </div>
+    <div id="status-right">UTF-8 · LF · SeñAlerta</div>
+  </div>
+
+  <!-- FOOTER -->
+  <div id="footer">
+    <div class="footer-card">
+      <span class="footer-icon">&#9995;</span>
+      <span class="footer-title">Hand Tracking</span>
+      <span class="footer-desc">21-point MediaPipe landmarks</span>
+    </div>
+    <div class="footer-card">
+      <span class="footer-icon">&#128565;</span>
+      <span class="footer-title">Emotion Detection</span>
+      <span class="footer-desc">Facial mesh inference</span>
+    </div>
+    <div class="footer-card">
+      <span class="footer-icon">&#129504;</span>
+      <span class="footer-title">LLM Interpretation</span>
+      <span class="footer-desc">Token → grammar synthesis</span>
+    </div>
+    <div class="footer-card">
+      <span class="footer-icon">&#128266;</span>
+      <span class="footer-title">Voice Output</span>
+      <span class="footer-desc">Synthetic TTS playback</span>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<script>
+  const API = 'http://localhost:8765'
+  let frameInterval = null
+  let trainingPoll  = null
+  let samplesPoll   = null
+  let captureWord   = null
+  let sentenceWords = []
+
+  /* ── utils ── */
+  function $(id) { return document.getElementById(id) }
+
+  async function apiFetch(method, path, body) {
+    const opts = { method, headers: { 'Content-Type': 'application/json' } }
+    if (body) opts.body = JSON.stringify(body)
+    const r = await fetch(API + path, opts)
+    return r.json()
+  }
+
+  /* ── clock ── */
+  function updateClock() {
+    const now  = new Date()
+    const hh   = String(now.getHours()).padStart(2, '0')
+    const mm   = String(now.getMinutes()).padStart(2, '0')
+    $('clock').textContent = hh + ':' + mm
+  }
+  updateClock()
+  setInterval(updateClock, 1000)
+
+  /* ── health ── */
+  async function checkHealth() {
+    try {
+      const r = await apiFetch('GET', '/health')
+      $('status-dot').className = 'ok'
+      $('status-msg').textContent = r.model_loaded ? '· modelo listo' : '· conectado'
+      $('hud-tr').textContent = 'MEDIAPIPE · OK'
+      $('hud-tr').className   = 'cam-hud ok'
+    } catch {
+      $('status-dot').className = ''
+      $('status-msg').textContent = 'Sin conexión'
+      $('hud-tr').textContent = 'MEDIAPIPE · OFFLINE'
+      $('hud-tr').className   = 'cam-hud err'
+    }
+  }
+
+  /* ── history words ── */
+  function renderHistory(words) {
+    sentenceWords = words || []
+    const container = $('history-words')
+    const prefix    = $('words-prefix')
+    const empty     = $('words-empty')
+    const cursor    = $('cursor')
+
+    // clear word badges
+    container.querySelectorAll('.word-badge').forEach(el => el.remove())
+
+    if (sentenceWords.length === 0) {
+      prefix.style.display = 'none'
+      empty.style.display  = ''
+    } else {
+      prefix.style.display = ''
+      empty.style.display  = 'none'
+      sentenceWords.forEach(w => {
+        const b = document.createElement('span')
+        b.className   = 'word-badge'
+        b.textContent = w
+        container.insertBefore(b, cursor)
+      })
+    }
+    $('sess-tokens').textContent = sentenceWords.length
+  }
+
+  /* ── active emotion ── */
+  const EMOTION_IDS = {
+    feliz:       'emo-feliz',
+    triste:      'emo-triste',
+    neutral:     'emo-neutral',
+    enojado:     'emo-enojado',
+    sorprendido: 'emo-sorprendido'
+  }
+
+  function setActiveEmotion(raw) {
+    const key = (raw || '').toLowerCase()
+    Object.entries(EMOTION_IDS).forEach(([name, id]) => {
+      $(id).classList.toggle('active', name === key)
+    })
+    const hudEl = $('emotion-hud')
+    if (key && EMOTION_IDS[key]) {
+      hudEl.textContent = raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase()
+      hudEl.classList.add('on')
+    } else {
+      hudEl.classList.remove('on')
+    }
+  }
+
+  /* ── camera ── */
+  async function startCamera() {
+    const r = await apiFetch('POST', '/camera/start')
+    if (r.status === 'started' || r.status === 'already_running') {
+      $('cam-stream').src = API + '/camera/stream'
+      $('cam-stream').classList.add('on')
+      startFramePoll()
+    }
+  }
+
+  async function stopCamera() {
+    clearInterval(frameInterval)
+    await apiFetch('POST', '/camera/stop')
+    $('cam-stream').src = ''
+    $('cam-stream').classList.remove('on')
+    $('pred-widget').classList.remove('on')
+    $('pred-fill').style.width = '0%'
+    $('sess-phase').textContent = 'idle'
+  }
+
+  /* ── frame poll ── */
+  function startFramePoll() {
+    clearInterval(frameInterval)
+    frameInterval = setInterval(async () => {
+      const t0 = Date.now()
+      try {
+        const r  = await apiFetch('GET', '/camera/frame')
+        const ms = Date.now() - t0
+        $('sess-latency').textContent = ms + 'ms'
+
+        const pct = Math.round((r.confidence || 0) * 100)
+        const hasHand = r.has_hand
+        const word    = r.current_word
+
+        // prediction widget
+        if (hasHand && word) {
+          $('pred-widget').classList.add('on')
+          $('pred-word').textContent   = word.toUpperCase()
+          $('pred-fill').style.width   = pct + '%'
+          $('pred-pct').textContent    = pct + '% — holding...'
+        } else {
+          $('pred-widget').classList.remove('on')
+        }
+
+        // phase
+        $('sess-phase').textContent = hasHand ? 'holding' : 'idle'
+
+        // sentence history
+        if (r.sentence && r.sentence.length > 0) {
+          renderHistory(r.sentence)
+        }
+
+        // FPS en HUD
+        $('hud-tl').textContent = 'CAM_01 · 640×480 · ' + (r.fps || '?') + 'fps'
+
+        // emotion
+        setActiveEmotion(r.emotion || '')
+
+      } catch {
+        $('sess-latency').textContent = '—'
+      }
+    }, 150)
+  }
+
+  /* ── clear sentence ── */
+  async function clearSentence() {
+    await apiFetch('POST', '/recognition/clear')
+    renderHistory([])
+  }
+
+  /* ── word list ── */
+  async function updateWordList() {
+    try {
+      const [samples, words] = await Promise.all([
+        apiFetch('GET', '/capture/samples'),
+        apiFetch('GET', '/recognition/words')
+      ])
+      const trained   = new Set(words.word_ids || [])
+      const container = $('signs-list')
+      const entries   = Object.entries(samples).sort((a, b) => a[0].localeCompare(b[0]))
+
+      container.innerHTML = ''
+      if (entries.length === 0) {
+        const empty = document.createElement('span')
+        empty.id = 'signs-empty'
+        empty.textContent = 'sin señas capturadas'
+        container.appendChild(empty)
+      } else {
+        entries.forEach(([word, info]) => {
+          const count = (info && typeof info === 'object') ? info.count : info
+          const type  = (info && typeof info === 'object') ? info.type  : 'word'
+          const div = document.createElement('div')
+          div.className = 'sign-row' + (trained.has(word) ? ' trained' : '') +
+                          (word === captureWord ? ' capturing' : '')
+          div.onclick = () => { $('word-input').value = word; captureWord = word }
+          div.innerHTML =
+            '<span class="sign-name">' + word +
+              ' <span style="font-size:9px;color:var(--muted);border:1px solid var(--border);border-radius:3px;padding:0 3px">' +
+              (type === 'letter' ? 'LETRA' : 'PALABRA') + '</span></span>' +
+            '<div class="sign-meta">' +
+              '<span class="sign-count">' + count + '</span>' +
+              (trained.has(word) ? '<span class="sign-check">✓</span>' : '') +
+            '</div>'
+          container.appendChild(div)
+        })
+      }
+      const n = entries.length
+      $('signs-count').textContent = n + (n === 1 ? ' seña' : ' señas')
+    } catch (e) { /* backend no disponible */ }
+  }
+
+  /* ── capture ── */
+  function selectedType() {
+    const el = document.querySelector('input[name="sign-type"]:checked')
+    return el ? el.value : 'word'
+  }
+
+  async function startCapture() {
+    const word = $('word-input').value.trim()
+    if (!word) return
+    captureWord = word
+    await apiFetch('POST', '/capture/start', { word, type: selectedType() })
+    clearInterval(samplesPoll)
+    samplesPoll = setInterval(async () => {
+      await updateSampleCount()
+      updateWordList()
+    }, 900)
+    updateSampleCount()
+    updateWordList()
+  }
+
+  async function stopCapture() {
+    clearInterval(samplesPoll)
+    await apiFetch('POST', '/capture/stop')
+    await updateSampleCount()
+    updateWordList()
+    captureWord = null
+  }
+
+  async function updateSampleCount() {
+    const r    = await apiFetch('GET', '/capture/samples')
+    const word = captureWord || $('word-input').value.trim()
+    if (word && r[word] !== undefined) {
+      const count = (typeof r[word] === 'object') ? r[word].count : r[word]
+      $('sample-count').textContent = count + ' muestras'
+    } else {
+      $('sample-count').textContent = ''
+    }
+  }
+
+  /* ── keypoints ── */
+  async function createKeypoints() {
+    await apiFetch('POST', '/keypoints/create')
+    $('status-msg').textContent = '· procesando keypoints...'
+    const poll = setInterval(async () => {
+      const s = await apiFetch('GET', '/keypoints/status')
+      $('status-msg').textContent = '· keypoints ' + s.processed.length + '/' + s.total.length
+      if (s.done) {
+        clearInterval(poll)
+        await checkHealth()
+      }
+    }, 2000)
+  }
+
+  /* ── training ── */
+  async function startTraining() {
+    const r = await apiFetch('POST', '/train')
+    if (r.error) return
+    $('train-progress-wrap').classList.add('on')
+    clearInterval(trainingPoll)
+    trainingPoll = setInterval(async () => {
+      const s = await apiFetch('GET', '/train/status')
+      $('train-fill').style.width  = s.progress + '%'
+      $('train-label').textContent = s.progress + '%'
+      if (s.error || (!s.running && s.progress >= 100)) {
+        clearInterval(trainingPoll)
+        if (!s.error) {
+          $('train-label').textContent = 'listo ✓'
+          setTimeout(() => {
+            $('train-progress-wrap').classList.remove('on')
+            $('train-fill').style.width = '0%'
+          }, 2500)
+          await checkHealth()
+          loadModelStatus()
+          loadQuality()
+        }
+      }
+    }, 3000)
+  }
+
+  /* ── modo grabación en serie (modelo base = abecedario) ── */
+  const BASE_LETTERS = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n',
+                        'ñ','o','p','q','r','s','t','u','v','w','x','y','z']
+  const LETTER_GOAL  = 20
+  const DEFAULT_MOVEMENT = ['j','z','ñ']   // letras que se hacen con movimiento
+  let serieLetter    = null
+  let seriePoll      = null
+  let serieSamples   = {}
+  let letterMovement = {}   // letra -> true si se captura como palabra (movimiento)
+
+  function initLetterMovement(samples) {
+    BASE_LETTERS.forEach(l => {
+      if (letterMovement[l] === undefined) {
+        letterMovement[l] = DEFAULT_MOVEMENT.includes(l)
+      }
+    })
+    // si una letra ya fue capturada, su tipo guardado manda
+    Object.entries(samples || {}).forEach(([w, info]) => {
+      if (BASE_LETTERS.includes(w) && info && typeof info === 'object' && info.type) {
+        letterMovement[w] = (info.type === 'word')
+      }
+    })
+  }
+
+  async function toggleLetterMovement(letter, ev) {
+    if (ev) ev.stopPropagation()
+    letterMovement[letter] = !letterMovement[letter]
+    const type = letterMovement[letter] ? 'word' : 'letter'
+    try { await apiFetch('POST', '/model/sign_type', { word: letter, type }) } catch (e) {}
+    renderSerie(serieSamples)
+  }
+
+  function letterCount(samples, letter) {
+    const info = samples[letter]
+    if (info === undefined) return 0
+    return (typeof info === 'object') ? info.count : info
+  }
+
+  function pendingLetters(samples) {
+    return BASE_LETTERS.filter(l => letterCount(samples, l) < LETTER_GOAL)
+  }
+
+  function renderSerie(samples) {
+    serieSamples = samples
+    const grid = $('serie-grid')
+    grid.innerHTML = ''
+    let complete = 0
+    BASE_LETTERS.forEach(l => {
+      const count = letterCount(samples, l)
+      const done  = count >= LETTER_GOAL
+      if (done) complete++
+      const isMove = !!letterMovement[l]
+      const div = document.createElement('div')
+      div.className = 'serie-letter' + (done ? ' done' : '') +
+                      (l === serieLetter ? ' current' : '')
+      div.onclick = () => serieSelect(l)
+      div.innerHTML =
+        '<span class="sl-char">' + l + '</span>' +
+        '<span class="sl-count">' + (done ? '✓ ' + count : count + '/' + LETTER_GOAL + ' · faltan ' + (LETTER_GOAL - count)) + '</span>' +
+        '<span class="sl-move' + (isMove ? ' active' : '') + '">' +
+          '<input type="checkbox" ' + (isMove ? 'checked' : '') + '> movim.' +
+        '</span>'
+      const toggle = div.querySelector('.sl-move')
+      toggle.onclick = (ev) => toggleLetterMovement(l, ev)
+      grid.appendChild(div)
+    })
+    $('serie-global-fill').style.width = Math.round(complete / BASE_LETTERS.length * 100) + '%'
+    $('serie-global-label').textContent = complete + ' de ' + BASE_LETTERS.length + ' letras completas'
+    $('serie-train-btn').disabled = complete < BASE_LETTERS.length
+    if (serieLetter) {
+      $('serie-live-count').textContent = Math.min(letterCount(samples, serieLetter), LETTER_GOAL) + '/' + LETTER_GOAL
+    }
+  }
+
+  async function refreshSerie() {
+    try {
+      const samples = await apiFetch('GET', '/capture/samples')
+      renderSerie(samples)
+      // letra completa: parar captura + celebración visual
+      if (serieLetter && letterCount(samples, serieLetter) >= LETTER_GOAL) {
+        const finished = serieLetter
+        await apiFetch('POST', '/capture/stop')
+        clearInterval(seriePoll)
+        seriePoll = null
+        $('serie-live').classList.add('celebrate')
+        $('serie-celebr').classList.add('on')
+        const next = pendingLetters(samples)[0]
+        $('serie-next-btn').textContent = next
+          ? 'Siguiente letra: ' + next.toUpperCase()
+          : '¡Abecedario completo!'
+        serieLetter = null
+        renderSerie(samples)
+      }
+    } catch (e) { /* backend no disponible */ }
+  }
+
+  async function serieSelect(letter) {
+    $('serie-live').classList.remove('celebrate')
+    $('serie-celebr').classList.remove('on')
+    serieLetter = letter
+    const type = letterMovement[letter] ? 'word' : 'letter'
+    $('serie-live').classList.add('on')
+    $('serie-live-char').textContent = letter
+    $('serie-live-type').textContent = type === 'word'
+      ? 'PALABRA — CON MOVIMIENTO' : 'LETRA — POSTURA ESTÁTICA'
+    $('serie-live-count').textContent = Math.min(letterCount(serieSamples, letter), LETTER_GOAL) + '/' + LETTER_GOAL
+    await apiFetch('POST', '/capture/start', { word: letter, type })
+    clearInterval(seriePoll)
+    seriePoll = setInterval(refreshSerie, 1000)
+    renderSerie(serieSamples)
+  }
+
+  function serieNext() {
+    const next = pendingLetters(serieSamples)[0]
+    if (next) serieSelect(next)
+  }
+
+  async function seriePause() {
+    clearInterval(seriePoll)
+    seriePoll = null
+    serieLetter = null
+    await apiFetch('POST', '/capture/stop')
+    $('serie-live').classList.remove('on', 'celebrate')
+    $('serie-celebr').classList.remove('on')
+    refreshSerie()
+  }
+
+  async function openSerie() {
+    $('serie-overlay').classList.add('on')
+    $('serie-next-btn').textContent = 'Siguiente pendiente'
+    try {
+      const samples = await apiFetch('GET', '/capture/samples')
+      initLetterMovement(samples)
+    } catch (e) { initLetterMovement({}) }
+    await refreshSerie()
+    loadReforzar()
+  }
+
+  async function closeSerie() {
+    await seriePause()
+    $('serie-overlay').classList.remove('on')
+    updateWordList()
+  }
+
+  /* ── entrenamiento del modelo base ── */
+  async function trainBaseModel() {
+    const wrap = $('serie-train-wrap')
+    wrap.classList.add('on')
+    $('serie-train-btn').disabled = true
+
+    // etapa 1: crear keypoints
+    $('serie-train-label').textContent = 'Creando keypoints...'
+    await apiFetch('POST', '/keypoints/create')
+    await new Promise(resolve => {
+      const poll = setInterval(async () => {
+        try {
+          const s = await apiFetch('GET', '/keypoints/status')
+          const pct = s.total.length ? Math.round(s.processed.length / s.total.length * 100) : 0
+          $('serie-train-fill').style.width = pct + '%'
+          $('serie-train-label').textContent = 'Keypoints: ' + s.processed.length + '/' + s.total.length
+          if (s.done) { clearInterval(poll); resolve() }
+        } catch (e) { /* sigue esperando */ }
+      }, 2000)
+    })
+
+    // etapa 2: entrenar
+    $('serie-train-fill').style.width = '0%'
+    $('serie-train-label').textContent = 'Entrenando modelo base...'
+    const r = await apiFetch('POST', '/train')
+    if (r.error) {
+      $('serie-train-label').textContent = 'Error: ' + r.error
+      $('serie-train-btn').disabled = false
+      return
+    }
+    const poll = setInterval(async () => {
+      try {
+        const s = await apiFetch('GET', '/train/status')
+        $('serie-train-fill').style.width = s.progress + '%'
+        $('serie-train-label').textContent = s.message || (s.progress + '%')
+        if (s.error) {
+          clearInterval(poll)
+          $('serie-train-label').textContent = 'Error: ' + s.error
+          $('serie-train-btn').disabled = false
+        } else if (!s.running && s.progress >= 100) {
+          clearInterval(poll)
+          const acc = (s.val_acc !== undefined && s.val_acc !== null)
+            ? ' — precisión: ' + Math.round(s.val_acc * 100) + '%'
+            : ''
+          $('serie-train-label').textContent = '✓ Modelo base entrenado' + acc
+          $('serie-train-fill').style.width = '100%'
+          await checkHealth()
+          loadModelStatus()
+          loadQuality()
+          loadReforzar()
+          $('serie-train-btn').disabled = false
+        }
+      } catch (e) { /* sigue esperando */ }
+    }, 3000)
+  }
+
+  /* ── FUNCIÓN 5: estado del modelo ── */
+  async function loadModelStatus() {
+    const body = $('model-status-body')
+    try {
+      const s = await apiFetch('GET', '/model/status')
+      const rows = [
+        ['Señas que conoce', s.known_signs],
+        ['  · letras / palabras', s.letters + ' / ' + s.words],
+        ['Muestras (señas del modelo)', s.total_samples],
+        ['Muestras totales en disco', s.all_samples],
+        ['Último entrenamiento', s.last_trained || '—'],
+        ['Última precisión val.', (s.last_val_acc != null)
+          ? Math.round(s.last_val_acc * 100) + '%'
+          : 'no disponible (entrena para verla)'],
+      ]
+      body.innerHTML = rows.map(([k, v]) =>
+        '<div class="ms-row"><span class="ms-k">' + k + '</span><span class="ms-v">' + v + '</span></div>'
+      ).join('')
+    } catch (e) {
+      body.innerHTML = '<div class="ms-row"><span class="ms-k">backend no disponible</span></div>'
+    }
+  }
+
+  /* ── FUNCIÓN 1: visor de matriz de confusión ── */
+  function showConfusionMatrix() {
+    const ov  = $('matrix-overlay')
+    const img = $('matrix-img')
+    const msg = $('matrix-msg')
+    ov.classList.add('on')
+    img.style.display = 'none'
+    msg.style.display = ''
+    msg.textContent = 'Cargando...'
+    img.onload  = () => { msg.style.display = 'none'; img.style.display = '' }
+    img.onerror = () => {
+      img.style.display = 'none'
+      msg.style.display = ''
+      msg.textContent = 'Aún no hay matriz. Entrena el modelo primero.'
+    }
+    img.src = API + '/model/confusion_matrix?t=' + Date.now()
+  }
+  function hideMatrix() { $('matrix-overlay').classList.remove('on') }
+
+  /* ── FUNCIÓN 2: reporte de calidad por seña ── */
+  async function loadQuality() {
+    const panel = $('quality-panel')
+    const body  = $('quality-body')
+    try {
+      const q = await apiFetch('GET', '/model/quality')
+      panel.classList.add('on')
+      if (!q.signs || q.signs.length === 0) {
+        body.innerHTML = '<span style="font-size:var(--f-xs);color:var(--muted)">sin señas</span>'
+        return
+      }
+      let html = '<table id="quality-table"><tr><th>seña</th><th>tipo</th><th>muestras</th><th>precisión</th><th>se confunde con</th></tr>'
+      q.signs.forEach(s => {
+        const acc = (s.accuracy != null) ? Math.round(s.accuracy * 100) + '%'
+          : (s.untrained ? 'sin entrenar' : '—')
+        const conf = (s.confusions && s.confusions.length)
+          ? s.confusions.map(c => c.with + ' (' + c.count + ')').join(', ')
+          : (s.samples < 20 ? 'pocas muestras' : '—')
+        html += '<tr class="' + (s.problematic ? 'bad' : '') + '">' +
+          '<td>' + s.name + '</td>' +
+          '<td><span class="q-type">' + (s.type === 'letter' ? 'LETRA' : 'PALABRA') + '</span></td>' +
+          '<td>' + s.samples + '</td>' +
+          '<td>' + acc + '</td>' +
+          '<td>' + conf + '</td>' +
+        '</tr>'
+      })
+      html += '</table>'
+      body.innerHTML = html
+    } catch (e) {
+      panel.classList.add('on')
+      body.innerHTML = '<span style="font-size:var(--f-xs);color:var(--danger)">no se pudo cargar la calidad</span>'
+    }
+  }
+
+  /* ── FUNCIÓN 3: refuerzo de señas confundidas (en modo serie) ── */
+  let reforzarSign = null
+
+  async function loadReforzar() {
+    const box  = $('serie-reforzar')
+    const list = $('serie-reforzar-list')
+    try {
+      const q = await apiFetch('GET', '/model/quality')
+      const bad = (q.signs || []).filter(s =>
+        !s.untrained && ((s.confusions && s.confusions.length) ||
+                         (s.accuracy != null && s.accuracy < 0.8)))
+      if (bad.length === 0) { box.classList.remove('on'); return }
+      box.classList.add('on')
+      list.innerHTML = ''
+      bad.forEach(s => {
+        const conf = (s.confusions && s.confusions.length)
+          ? 'se confunde con ' + s.confusions.map(c => c.with).join(', ')
+          : 'precisión ' + Math.round((s.accuracy || 0) * 100) + '%'
+        const row = document.createElement('div')
+        row.className = 'reforzar-row'
+        row.innerHTML =
+          '<span class="rf-info"><b>' + s.name + '</b> · ' + s.samples + ' muestras<br><small>' + conf + '</small></span>'
+        const btn = document.createElement('button')
+        btn.className = 'btn btn-ghost'
+        btn.textContent = '+10 muestras'
+        btn.onclick = () => reinforceSign(s.name, s.type, s.samples, btn)
+        row.appendChild(btn)
+        list.appendChild(row)
+      })
+    } catch (e) { box.classList.remove('on') }
+  }
+
+  async function reinforceSign(name, type, startCount, btn) {
+    // graba 10 muestras MÁS sin reiniciar las existentes
+    reforzarSign = name
+    const target = startCount + 10
+    btn.disabled = true
+    await apiFetch('POST', '/capture/start', { word: name, type: type || 'word' })
+    const poll = setInterval(async () => {
+      try {
+        const r = await apiFetch('GET', '/capture/samples')
+        const info = r[name]
+        const cur = info ? (typeof info === 'object' ? info.count : info) : 0
+        btn.textContent = cur + '/' + target
+        if (cur >= target) {
+          clearInterval(poll)
+          await apiFetch('POST', '/capture/stop')
+          btn.textContent = '✓ reforzada'
+          $('serie-reforzar-train').textContent = 'Reentrenar tras reforzar'
+        }
+      } catch (e) { /* sigue */ }
+    }, 1000)
+  }
+
+  /* ── emotion capture ── */
+  let emotionCapturePoll = null
+
+  async function startEmotionCapture() {
+    const emotion = $('emotion-select').value
+    if (!emotion) return
+    await apiFetch('POST', '/emotion/capture/start', { emotion })
+    clearInterval(emotionCapturePoll)
+    emotionCapturePoll = setInterval(updateEmotionSamples, 1000)
+    updateEmotionSamples()
+  }
+
+  async function stopEmotionCapture() {
+    clearInterval(emotionCapturePoll)
+    await apiFetch('POST', '/emotion/capture/stop')
+    updateEmotionSamples()
+  }
+
+  async function updateEmotionSamples() {
+    try {
+      const r     = await apiFetch('GET', '/emotion/samples')
+      const parts = Object.entries(r)
+        .filter(([, v]) => v > 0)
+        .map(([k, v]) => k + ':' + v)
+      $('emotion-sample-count').textContent = parts.length ? parts.join(' · ') : 'sin muestras'
+    } catch { /* server offline */ }
+  }
+
+  async function trainEmotionModel() {
+    const r = await apiFetch('POST', '/emotion/train')
+    if (r.error) { alert(r.error); return }
+    const wrap = $('emotion-train-wrap')
+    wrap.style.display = 'flex'
+    const poll = setInterval(async () => {
+      const s = await apiFetch('GET', '/emotion/train/status')
+      $('emotion-train-fill').style.width  = s.progress + '%'
+      $('emotion-train-label').textContent = s.message || (s.progress + '%')
+      if (s.error || (!s.running && s.progress >= 100)) {
+        clearInterval(poll)
+        if (s.error) {
+          $('emotion-train-label').textContent = 'Error: ' + s.error
+        } else {
+          setTimeout(() => {
+            wrap.style.display = 'none'
+            $('emotion-train-fill').style.width = '0%'
+          }, 3000)
+        }
+      }
+    }, 2000)
+  }
+
+  /* ── init ── */
+  renderHistory([])
+  checkHealth()
+  setInterval(checkHealth, 10000)
+  updateEmotionSamples()
+  updateWordList()
+  setInterval(updateWordList, 15000)
+  loadModelStatus()
+  setInterval(loadModelStatus, 15000)
+</script>
+</body>
+</html>
